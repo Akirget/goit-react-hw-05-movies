@@ -50,7 +50,7 @@ const Movies = () => {
             type="text"
             autoComplete="off"
             autoFocus
-            placeholder="Enter your request..."
+            placeholder="Введіть назву фільма"
             className={styles.input}
           />
         </label>
