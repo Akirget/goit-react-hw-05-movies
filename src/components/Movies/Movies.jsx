@@ -23,7 +23,7 @@ const Movies = () => {
       movie = search;
       fetchSearch();
     } else {
-      return Notiflix.Notify.warning('Введіть назву фільма');
+      return Notiflix.Notify.failure('Введіть назву фільма');
     }
     navigate(`/movies?query=${movie}`);
     form.reset();
