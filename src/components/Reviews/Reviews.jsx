@@ -1,42 +1,29 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-
-import { getReviews } from 'api/api';
-import styles from './Reviews.module.css';
+import * as moviesApi from '../../services/movies-api';
 
 const Reviews = () => {
   const { movieId } = useParams();
-  const [reviews, setReviews] = useState([]);
-  const [noReviews, setNoReviews] = useState(null);
-
-  const fetchReviews = async () => {
-    try {
-      const coments = await getReviews(movieId);
-      if (coments.length === 0) {
-        setNoReviews('Sorry, there is no reviews for this movie.');
-      } else {
-        setReviews(coments);
-      };
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [reviews, setReviews] = useState(null);
 
   useEffect(() => {
-    fetchReviews();
-    // eslint-disable-next-line
-  }, []);
+    moviesApi.getMovieReviews(movieId).then(setReviews);
+  }, [movieId]);
 
   return (
     <>
-      <ul>
-        {noReviews ? noReviews : reviews.map(({id, author, content}) => (
-          <li key={id} className={styles.item}>
-            <p className={styles.author}>Author: {author}</p>
-            <p className={styles.text}>{content}</p>
-          </li>
-        ))}
-      </ul>
+      {reviews && reviews.length > 0 ? (
+        <ul>
+          {reviews.map(({ id, author, content }) => (
+            <li key={id}>
+              <h3>Author: {author}</h3>
+              <p>{content}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>We don't have any reviews for this movie.</p>
+      )}
     </>
   );
 };

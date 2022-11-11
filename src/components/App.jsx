@@ -1,32 +1,43 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
-
-import Navigator from './Navigator/Navigator';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Loader from './Loader/Loader';
+import Navigation from './Navigation/Navigation';
 
-const Home = lazy(() => import('./Home/Home'));
-const Movies = lazy(() => import('./Movies/Movies'));
-const MovieDetails = lazy(() => import('components/MovieDetails/MovieDetails'));
-const Cast = lazy(() => import('./Cast/Cast'));
-const Reviews = lazy(() => import('./Reviews/Reviews'));
+const HomePage = lazy(() =>
+  import('./HomePage/HomePage' /* webpackChunkName: "homepage" */)
+);
+const MovieDetailsPage = lazy(() =>
+  import(
+    './MovieDetailsPage/MovieDetailsPage' /* webpackChunkName: "moviedetailspage" */
+  )
+);
+const MoviesPage = lazy(() =>
+  import('./MoviesPage/MoviesPage' /* webpackChunkName: "moviespage" */)
+);
+const Cast = lazy(() => import('./Cast/Cast' /* webpackChunkName: "cast" */));
+const Reviews = lazy(() =>
+  import('./Reviews/Reviews' /* webpackChunkName: "reviews" */)
+);
 
-const App = () => {
+export const App = () => {
   return (
-    <div>
-      <Navigator />
+    <>
+      <Navigation />
+
       <Suspense fallback={<Loader />}>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/movies" element={<Movies />} />
-          <Route path="/movies/:movieId" element={<MovieDetails />}>
-            <Route path="/movies/:movieId/cast" element={<Cast />} />
-            <Route path="/movies/:movieId/reviews" element={<Reviews />} />
+          <Route path="/" element={<HomePage />} />
+
+          <Route path="/movies" element={<MoviesPage />} />
+
+          <Route path="/movies/:movieId" element={<MovieDetailsPage />}>
+            <Route path="cast" element={<Cast />} />
+            <Route path="reviews" element={<Reviews />} />
           </Route>
-          <Route path="*" element={<Home />} />
+
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Suspense>
-    </div>
+    </>
   );
 };
-
-export default App;

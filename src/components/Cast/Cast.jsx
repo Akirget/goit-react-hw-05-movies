@@ -1,49 +1,35 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-
-import { getCast } from 'api/api';
-import styles from './Cast.module.css';
-import { noFoto } from 'components/Image/image';
+import * as moviesApi from '../../services/movies-api';
+import s from './Cast.module.css';
 
 const Cast = () => {
   const { movieId } = useParams();
-  const [cast, setCast] = useState([]);
-
-  const fetchCast = async () => {
-    try {
-      const actors = await getCast(movieId);
-      setCast(actors);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [actors, setActors] = useState(null);
 
   useEffect(() => {
-    fetchCast();
-    // eslint-disable-next-line
-  }, []);
+    moviesApi.getMovieCredits(movieId).then(setActors).catch(console.log);
+  }, [movieId]);
 
   return (
     <>
-      <ul className={styles.list}>
-        {cast.map(({ id, name, character, profile_path }) => (
-          <li key={id} className={styles.item}>
-            <img
-              src={
-                profile_path
-                  ? `https://image.tmdb.org/t/p/w500${profile_path}`
-                  : noFoto
-              }
-              alt="img"
-              className={styles.img}
-            />
-            <div>
-              <p className={styles.name}>{name}</p>
-              <p className={styles.text}>Character: {character}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+      {actors && (
+        <ul className={s.list}>
+          {actors
+            .filter((actor, index) => index < 10 && actor.profile_path)
+            .map(({ id, name, profile_path, character }) => (
+              <li key={id}>
+                <img
+                  src={`https://image.tmdb.org/t/p/original${profile_path}`}
+                  alt={name}
+                  width={200}
+                />
+                <h3>{name}</h3>
+                <p>Character: {character}</p>
+              </li>
+            ))}
+        </ul>
+      )}
     </>
   );
 };
